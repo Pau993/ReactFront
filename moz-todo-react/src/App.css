@@ -8,7 +8,7 @@ body {
 }
 
 .container {
-  margin-top: 60px;
+  margin-top: 20px;
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
@@ -28,13 +28,30 @@ h1 {
   font-weight: bold;
 }
 
-.card {
-  background-color: #ffffff;
-  border-radius: 15px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  margin-bottom: 25px;
+.caja {
+  background-color: #964242;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  transition: transform 0.3s, box-shadow 0.3s;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto; /* Centra el cuadro en la página */
+}
+
+/* Estilo para el cuerpo del cuadro */
+.caja-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Estilo para el select */
+.form-control {
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 .card:hover {
@@ -50,7 +67,7 @@ button {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
-  margin: 5px;
+  margin: 0 auto;
 }
 
 button:hover {
@@ -104,7 +121,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 25px;
-  background-color: #ffffff;
+  background-color: #b72a52;
   border-radius: 10px;
   overflow: hidden;
 }

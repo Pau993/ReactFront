@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import './App.css'
+import './App.css';
+
 const App = () => {
-  const [action, setAction] = useState('Agregar tarea');
+  const [action, setAction] = useState('addTask');
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
   const [taskIdComplete, setTaskIdComplete] = useState('');
@@ -9,6 +10,7 @@ const App = () => {
 
   const apiUrl = 'http://localhost:8080/tasks';
 
+  // Cargar tareas si la acción es 'viewTasks'
   useEffect(() => {
     if (action === 'viewTasks') {
       loadTasks();
@@ -71,7 +73,7 @@ const App = () => {
       });
 
       alert(`Tarea con ID ${taskId} marcada como completada.`);
-      loadTasks();
+      loadTasks(); // Volver a cargar las tareas después de marcar una como completada
     } catch (error) {
       console.error('Error al completar la tarea:', error);
     }
@@ -90,7 +92,7 @@ const App = () => {
       });
 
       alert(`Tarea con ID ${taskId} eliminada.`);
-      loadTasks();
+      loadTasks(); // Volver a cargar las tareas después de eliminar una
     } catch (error) {
       console.error('Error al eliminar la tarea:', error);
     }
@@ -100,47 +102,65 @@ const App = () => {
     setAction(e.target.value);
   };
 
-  const handleAction = () => {
-    switch (action) {
-      case 'addTask':
-        addTask();
-        break;
-      case 'completeTask':
-        completeTask();
-        break;
-      case 'deleteTask':
-        deleteTask();
-        break;
-      default:
-        loadTasks();
-    }
-  };
-
   return (
     <div>
       <h1>Administrador de Tareas</h1>
-      <div>
-        <label htmlFor="actionSelect">Selecciona una acción:</label>
-        <select id="actionSelect" value={action} onChange={handleSelectChange}>
-          <option value="addTask">Agregar tarea</option>
-          <option value="viewTasks">Ver listado de tareas</option>
-          <option value="completeTask">Marcar tarea como completada</option>
-          <option value="deleteTask">Eliminar tarea</option>
-        </select>
-        <button onClick={handleAction}>Aceptar</button>
-      </div>
+      <div className="caja">
+        <div className="caja-body">
+          <label htmlFor="actionSelect">Selecciona una acción:</label>
+          <select
+            id="actionSelect"
+            value={action}
+            onChange={handleSelectChange}
+            className="form-control"
+          >
+            <option value="addTask">Agregar tarea</option>
+            <option value="viewTasks">Ver listado de tareas</option>
+            <option value="completeTask">Marcar tarea como completada</option>
+            <option value="deleteTask">Eliminar tarea</option>
+          </select>
 
-      {action === 'addTask' && (
+          {action === 'addTask' && (
+            <div className="input-container">
+              <input
+                type="text"
+                placeholder="Agregar nueva tarea"
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)}
+                className="task-input"
+              />
+              <button onClick={addTask} className="add-button">
+                Agregar
+              </button>
+            </div>
+          )}
+
+
+          {action === 'completeTask' && (
         <div>
           <input
             type="text"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            placeholder="Agregar nueva tarea"
+            value={taskIdComplete}
+            onChange={(e) => setTaskIdComplete(e.target.value)}
+            placeholder="ID de la tarea"
           />
-          <button onClick={addTask}>Agregar</button>
+          <button onClick={completeTask}>Marcar como completada</button>
         </div>
-      )}
+          )}
+
+          {action === 'deleteTask' && (
+        <div>
+          <input
+            type="text"
+            value={taskIdDelete}
+            onChange={(e) => setTaskIdDelete(e.target.value)}
+            placeholder="ID de la tarea"
+          />
+          <button onClick={deleteTask}>Eliminar tarea</button>
+        </div>
+          )}
+        </div>
+      </div>
 
       {action === 'viewTasks' && (
         <table>
@@ -161,30 +181,6 @@ const App = () => {
             ))}
           </tbody>
         </table>
-      )}
-
-      {action === 'completeTask' && (
-        <div>
-          <input
-            type="text"
-            value={taskIdComplete}
-            onChange={(e) => setTaskIdComplete(e.target.value)}
-            placeholder="ID de la tarea"
-          />
-          <button onClick={completeTask}>Marcar como completada</button>
-        </div>
-      )}
-
-      {action === 'deleteTask' && (
-        <div>
-          <input
-            type="text"
-            value={taskIdDelete}
-            onChange={(e) => setTaskIdDelete(e.target.value)}
-            placeholder="ID de la tarea"
-          />
-          <button onClick={deleteTask}>Eliminar tarea</button>
-        </div>
       )}
     </div>
   );
