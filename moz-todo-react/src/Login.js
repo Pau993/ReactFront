@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import './Login.css';
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
@@ -25,6 +27,11 @@ const Login = ({ onLogin }) => {
       console.error('Error durante la autenticación:', error);
     }
   };
+
+  const handleRegister = () => {
+    // Redirige al registro
+    navigate('/register'); // Redirige a la ruta de registro
+  }
 
   return (
     <div className="login-container">
@@ -53,7 +60,7 @@ const Login = ({ onLogin }) => {
         <button className="login-button" onClick={handleLogin}>
           Login
         </button>
-        <button className="register-button" onClick={() => navigate('/register')}>
+        <button className="register-button" onClick={handleRegister}>
           Registrarse
         </button>
       </div>

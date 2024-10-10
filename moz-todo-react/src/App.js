@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import './App.css'
 import Login from './Login';
+import Register from './Registrar';
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [action, setAction] = useState('Agregar tarea');
@@ -140,95 +142,107 @@ const App = () => {
   };
 
   if (!isAuthenticated) {
-    return <Login onLogin={() => setIsAuthenticated(true)} />;
+    
   }
 
   return (
-    <div>
-      <h1>Administrador de Tareas</h1>
-      <div className="caja">
-        <div className="caja-body">
-          <label htmlFor="actionSelect">Selecciona una acción:</label>
-          <select
-            id="actionSelect"
-            value={action}
-            onChange={handleSelectChange}
-            className="form-control"
-          >
-            <option value="addTask">Agregar tarea</option>
-            <option value="viewTasks">Ver listado de tareas</option>
-            <option value="completeTask">Marcar tarea como completada</option>
-            <option value="deleteTask">Eliminar tarea</option>
-          </select>
+    <Router>
+      {!isAuthenticated ? (
+        <Routes>
+          {/* Ruta para Login */}
+          <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
+          {/* Ruta para Register */}
+          <Route path="/register" element={<Register />} />
+          {/* Ruta por defecto para redirigir a login si no encuentra la ruta */}
+          <Route path="*" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
+        </Routes>
+      ) : (
+        <div>
+          <h1>Administrador de Tareas</h1>
+          <div className="caja">
+            <div className="caja-body">
+              <label htmlFor="actionSelect">Selecciona una acción:</label>
+              <select
+                id="actionSelect"
+                value={action}
+                onChange={handleSelectChange}
+                className="form-control"
+              >
+                <option value="addTask">Agregar tarea</option>
+                <option value="viewTasks">Ver listado de tareas</option>
+                <option value="completeTask">Marcar tarea como completada</option>
+                <option value="deleteTask">Eliminar tarea</option>
+              </select>
 
-          {action === 'addTask' && (
-            <div className="input-container">
-              <input
-                type="text"
-                placeholder="Agregar nueva tarea"
-                value={newTask}
-                onChange={(e) => setNewTask(e.target.value)}
-                className="task-input"
-              />
-              <button onClick={addTask} className="add-button">
-                Agregar
-              </button>
+              {action === 'addTask' && (
+                <div className="input-container">
+                  <input
+                    type="text"
+                    placeholder="Agregar nueva tarea"
+                    value={newTask}
+                    onChange={(e) => setNewTask(e.target.value)}
+                    className="task-input"
+                  />
+                  <button onClick={addTask} className="add-button">
+                    Agregar
+                  </button>
+                </div>
+              )}
+
+              {action === 'completeTask' && (
+                <div>
+                  <input
+                    type="text"
+                    value={taskIdComplete}
+                    onChange={(e) => setTaskIdComplete(e.target.value)}
+                    placeholder="ID de la tarea"
+                  />
+                  <button onClick={completeTask}>Marcar como completada</button>
+                </div>
+              )}
+
+              {action === 'deleteTask' && (
+                <div>
+                  <input
+                    type="text"
+                    value={taskIdDelete}
+                    onChange={(e) => setTaskIdDelete(e.target.value)}
+                    placeholder="ID de la tarea"
+                  />
+                  <button onClick={deleteTask}>Eliminar tarea</button>
+                </div>
+              )}
             </div>
+          </div>
+
+          {action === 'viewTasks' && (
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Descripción</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tasks.map((task) => (
+                  <tr key={task.id}>
+                    <td>{task.id}</td>
+                    <td>{task.description}</td>
+                    <td>{task.completed ? 'Completada' : 'Pendiente'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
-
-
-          {action === 'completeTask' && (
-        <div>
-          <input
-            type="text"
-            value={taskIdComplete}
-            onChange={(e) => setTaskIdComplete(e.target.value)}
-            placeholder="ID de la tarea"
-          />
-          <button onClick={completeTask}>Marcar como completada</button>
+          <div>
+            <button onClick={logout} style={{ marginTop: '20px', backgroundColor: 'red', color: 'white' }}>
+              Cerrar sesión
+            </button>
+          </div>
         </div>
-          )}
-
-          {action === 'deleteTask' && (
-        <div>
-          <input
-            type="text"
-            value={taskIdDelete}
-            onChange={(e) => setTaskIdDelete(e.target.value)}
-            placeholder="ID de la tarea"
-          />
-          <button onClick={deleteTask}>Eliminar tarea</button>
-        </div>
-          )}
-        </div>
-      </div>
-
-      {action === 'viewTasks' && (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Descripción</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tasks.map((task) => (
-              <tr key={task.id}>
-                <td>{task.id}</td>
-                <td>{task.description}</td>
-                <td>{task.completed ? 'Completada' : 'Pendiente'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       )}
-      <div>
-        <button onClick={logout} style={{ marginTop: '20px', backgroundColor: 'red', color: 'white' }}>
-          Cerrar sesión
-        </button>
-      </div>
-    </div>
+    </Router>
   );
 };
 

@@ -6,7 +6,7 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+
 
   const handleRegister = async () => {
     try {
@@ -19,8 +19,7 @@ const Register = () => {
       });
 
       if (response.ok) {
-        alert('Registro exitoso. Ahora puedes iniciar sesión.');
-        navigate('/login'); // Redirige al login después del registro
+        alert('Registro exitoso. Ahora puedes iniciar sesión.'); // Redirige al login después del registro
       } else {
         alert('Error al registrar usuario.');
       }
