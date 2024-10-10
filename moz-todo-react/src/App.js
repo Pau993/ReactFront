@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css'
+import Login from './Login';
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [action, setAction] = useState('Agregar tarea');
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
@@ -115,6 +117,10 @@ const App = () => {
         loadTasks();
     }
   };
+
+  if (!isAuthenticated) {
+    return <Login onLogin={() => setIsAuthenticated(true)} />;
+  }
 
   return (
     <div>
