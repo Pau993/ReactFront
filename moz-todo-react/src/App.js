@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import './App.css';
 
 const App = () => {
   const [action, setAction] = useState('addTask');
+=======
+import './App.css'
+import Login from './Login';
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [action, setAction] = useState('Agregar tarea');
+>>>>>>> 00052ae49b566389fad69f0a1a9fad8f89523c63
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
   const [taskIdComplete, setTaskIdComplete] = useState('');
@@ -102,6 +110,29 @@ const App = () => {
     setAction(e.target.value);
   };
 
+<<<<<<< HEAD
+=======
+  const handleAction = () => {
+    switch (action) {
+      case 'addTask':
+        addTask();
+        break;
+      case 'completeTask':
+        completeTask();
+        break;
+      case 'deleteTask':
+        deleteTask();
+        break;
+      default:
+        loadTasks();
+    }
+  };
+
+  if (!isAuthenticated) {
+    return <Login onLogin={() => setIsAuthenticated(true)} />;
+  }
+
+>>>>>>> 00052ae49b566389fad69f0a1a9fad8f89523c63
   return (
     <div>
       <h1>Administrador de Tareas</h1>
