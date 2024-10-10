@@ -21,10 +21,10 @@ const toggleTaskCompletion = (taskId) => {
 };
 
 return (
-    <div>
-      <h1>Task Manager</h1>
-      <TaskForm addTask={addTask} />
-      <TaskList tasks={tasks} toggleTaskCompletion={toggleTaskCompletion} />
+    <div className='app-container'>
+      <h1 className='app-title'>Task Manager</h1>
+      <TaskForm addTask={(task) => console.log(task)} />
+      <TaskList tasks={[]} />
     </div>
   );
 };
