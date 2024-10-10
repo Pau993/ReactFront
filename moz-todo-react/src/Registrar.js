@@ -1,34 +1,37 @@
 import React, { useState } from 'react';
 import './Login.css';
+import { useNavigate } from 'react-router-dom';
 
-const Login = ({ onLogin }) => {
+const Register = () => {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
-      const response = await fetch('http://localhost:8080/auth/login', {
+      const response = await fetch('http://localhost:8080/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
-        credentials: 'include',
+        body: JSON.stringify({ username, email, password }),
       });
-      
+
       if (response.ok) {
-        onLogin();
+        alert('Registro exitoso. Ahora puedes iniciar sesión.');
+        navigate('/login'); // Redirige al login después del registro
       } else {
-        alert('Usuario o contraseña incorrectos');
+        alert('Error al registrar usuario.');
       }
     } catch (error) {
-      console.error('Error durante la autenticación:', error);
+      console.error('Error durante el registro:', error);
     }
   };
 
   return (
     <div className="login-container">
-      <h2>Iniciar Sesión</h2>
+      <h2>Registrarse</h2>
       <div className="input-container">
         <label htmlFor="username">Nombre de Usuario</label>
         <input
@@ -37,6 +40,16 @@ const Login = ({ onLogin }) => {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="Ingresa tu nombre de usuario"
+        />
+      </div>
+      <div className="input-container">
+        <label htmlFor="email">Correo Electrónico</label>
+        <input
+          type="email"
+          id="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Ingresa tu correo"
         />
       </div>
       <div className="input-container">
@@ -49,16 +62,11 @@ const Login = ({ onLogin }) => {
           placeholder="Ingresa tu contraseña"
         />
       </div>
-      <div className="button-container">
-        <button className="login-button" onClick={handleLogin}>
-          Login
-        </button>
-        <button className="register-button" onClick={() => navigate('/register')}>
-          Registrarse
-        </button>
-      </div>
+      <button className="login-button" onClick={handleRegister}>
+        Registrarse
+      </button>
     </div>
   );
 };
 
-export default Login;
+export default Register;
