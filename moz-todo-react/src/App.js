@@ -9,7 +9,6 @@ const App = () => {
 
   const apiUrl = 'http://localhost:8080/tasks';
 
-  // Cargar las tareas desde el backend
   useEffect(() => {
     if (action === 'viewTasks') {
       loadTasks();
@@ -26,7 +25,6 @@ const App = () => {
     }
   };
 
-  // Agregar una nueva tarea
   const addTask = async () => {
     if (newTask.trim() === '') {
       alert('La descripción de la tarea no puede estar vacía.');
@@ -56,7 +54,6 @@ const App = () => {
     }
   };
 
-  // Marcar una tarea como completada
   const completeTask = async () => {
     const taskId = parseInt(taskIdComplete.trim());
     if (isNaN(taskId)) {
@@ -80,7 +77,6 @@ const App = () => {
     }
   };
 
-  // Eliminar una tarea
   const deleteTask = async () => {
     const taskId = parseInt(taskIdDelete.trim());
     if (isNaN(taskId)) {
