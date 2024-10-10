@@ -10,6 +10,7 @@ const App = () => {
   const [taskIdDelete, setTaskIdDelete] = useState('');
 
   const apiUrl = 'http://localhost:8080/tasks';
+  const logoutUrl = 'http://localhost:8080/auth/logout';
 
   useEffect(() => {
     if (action === 'viewTasks') {
@@ -118,6 +119,24 @@ const App = () => {
     }
   };
 
+  const logout = async () => {
+    try {
+      const response = await fetch(logoutUrl, {
+        method: 'POST',
+        credentials: 'include', // Para incluir la cookie de sesión
+      });
+
+      if (response.ok) {
+        alert('Sesión cerrada con éxito.');
+        setIsAuthenticated(false); // Actualizar el estado para indicar que no está autenticado
+      } else {
+        alert('Error al cerrar sesión.');
+      }
+    } catch (error) {
+      console.error('Error al cerrar la sesión:', error);
+    }
+  };
+
   if (!isAuthenticated) {
     return <Login onLogin={() => setIsAuthenticated(true)} />;
   }
@@ -192,6 +211,11 @@ const App = () => {
           <button onClick={deleteTask}>Eliminar tarea</button>
         </div>
       )}
+      <div>
+        <button onClick={logout} style={{ marginTop: '20px', backgroundColor: 'red', color: 'white' }}>
+          Cerrar sesión
+        </button>
+      </div>
     </div>
   );
 };

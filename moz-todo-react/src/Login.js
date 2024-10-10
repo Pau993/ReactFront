@@ -7,17 +7,16 @@ const Login = ({ onLogin }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:8080/login', {
+      const response = await fetch('http://localhost:8080/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
+        credentials: 'include',
       });
       
       if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('authToken', data.token);
         onLogin();
       } else {
         alert('Usuario o contraseña incorrectos');
