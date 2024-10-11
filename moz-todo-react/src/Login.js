@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // Para manejar mensajes de error
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -15,9 +16,9 @@ const Login = ({ onLogin }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
-        credentials: 'include',
+        credentials: 'include', // Para enviar cookies si es necesario
       });
-      
+
       if (response.ok) {
         onLogin();
       } else {
@@ -29,13 +30,13 @@ const Login = ({ onLogin }) => {
   };
 
   const handleRegister = () => {
-    // Redirige al registro
     navigate('/register'); // Redirige a la ruta de registro
-  }
+  };
 
   return (
     <div className="login-container">
       <h2>Iniciar Sesión</h2>
+      {errorMessage && <p className="error-message">{errorMessage}</p>} {/* Mostrar mensaje de error si lo hay */}
       <div className="input-container">
         <label htmlFor="username">Nombre de Usuario</label>
         <input
@@ -55,8 +56,7 @@ const Login = ({ onLogin }) => {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Ingresa tu contraseña"
         />
-      </div>
-      <div className="button-container">
+      </div>n      <div className="button-container">
         <button className="login-button" onClick={handleLogin}>
           Login
         </button>
@@ -67,5 +67,4 @@ const Login = ({ onLogin }) => {
     </div>
   );
 };
-
 export default Login;
