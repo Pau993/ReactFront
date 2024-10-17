@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -8,26 +9,19 @@ const Login = ({ onLogin }) => {
   const [errorMessage, setErrorMessage] = useState(''); // Para manejar mensajes de error
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetch('http://localhost:8080/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-        credentials: 'include', // Para enviar cookies si es necesario
-      });
+const handleLogin = async () => {
+  const response = await axios.post(
+    'http://localhost:8080/auth/login',
+    { username, password },
+    { withCredentials: true } // Para enviar cookies si es necesario
+  ).then((response) => {
+    onLogin();
+  }).catch((error) => {
+    alert('Usuario o contraseña incorrectos');
+  });
+  
+};
 
-      if (response.ok) {
-        onLogin();
-      } else {
-        alert('Usuario o contraseña incorrectos');
-      }
-    } catch (error) {
-      console.error('Error durante la autenticación:', error);
-    }
-  };
 
   const handleRegister = () => {
     navigate('/register'); // Redirige a la ruta de registro

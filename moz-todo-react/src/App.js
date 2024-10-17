@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import './App.css'
 import Login from './Login';
@@ -149,12 +149,13 @@ const App = () => {
     <Router>
       {!isAuthenticated ? (
         <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
           {/* Ruta para Login */}
           <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
           {/* Ruta para Register */}
           <Route path="/register" element={<Register />} />
           {/* Ruta por defecto para redirigir a login si no encuentra la ruta */}
-          <Route path="*" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       ) : (
         <div>
@@ -162,18 +163,20 @@ const App = () => {
           <div className="caja">
             <div className="caja-body">
               <label htmlFor="actionSelect">Selecciona una acción:</label>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
               <select
                 id="actionSelect"
                 value={action}
                 onChange={handleSelectChange}
                 className="form-control"
               >
+                <option value="">Selecciona una acción</option>
                 <option value="addTask">Agregar tarea</option>
                 <option value="viewTasks">Ver listado de tareas</option>
                 <option value="completeTask">Marcar tarea como completada</option>
                 <option value="deleteTask">Eliminar tarea</option>
               </select>
-
+              </div>
               {action === 'addTask' && (
                 <div className="input-container">
                   <input
@@ -235,8 +238,18 @@ const App = () => {
               </tbody>
             </table>
           )}
-          <div>
-            <button onClick={logout} style={{ marginTop: '20px', backgroundColor: 'red', color: 'white' }}>
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
+            <button
+              onClick={logout}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#f0f0f0', // Color de fondo claro
+                color: '#333', // Texto oscuro
+                border: '1px solid #ccc',
+                borderRadius: '5px',
+                cursor: 'pointer',
+              }}
+            >
               Cerrar sesión
             </button>
           </div>

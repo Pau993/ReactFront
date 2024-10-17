@@ -6,20 +6,28 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
 
   const handleRegister = async () => {
+    console.log("Datos enviados:", { username, email, password });
+    if (!username || !email || !password) {
+      alert('Todos los campos son obligatorios');
+      return;
+    }
     try {
-      const response = await fetch('http://localhost:8080/tasks', {
+      const response = await fetch('http://localhost:8080/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ username, email, password }),
       });
 
       if (response.ok) {
         alert('Registro exitoso. Ahora puedes iniciar sesión.'); // Redirige al login después del registro
+        navigate('/login');
       } else {
         alert('Error al registrar usuario.');
       }

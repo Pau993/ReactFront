@@ -57,4 +57,21 @@
   .login-button:hover {
     background-color: #45a049;
   }
+
+  /* Estilos para el botón de registro */
+.register-button {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #008CBA; /* Color azul para el botón de registro */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px; /* Espacio superior entre los botones */
+}
+
+.register-button:hover {
+  background-color: #007bb5; /* Color de hover para el botón de registro */
+}
   
