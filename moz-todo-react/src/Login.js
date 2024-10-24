@@ -1,36 +1,51 @@
 import React, { useState } from 'react';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // Para manejar mensajes de error
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-const handleLogin = async () => {
-  const response = await axios.post(
-    'http://localhost:8080/auth/login',
-    { username, password },
-    { withCredentials: true } // Para enviar cookies si es necesario
-  ).then((response) => {
-    onLogin();
-  }).catch((error) => {
-    alert('Usuario o contraseña incorrectos');
-  });
-  
-};
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/auth/login', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+      });
 
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.token) {
+          const token = data.token;
+          localStorage.setItem('jwtToken', token); // Almacena el token en localStorage
+
+          // Notifica al componente padre que el usuario está autenticado
+          onLogin(token); // Envía el token al componente padre
+        } else {
+          throw new Error('La respuesta no contiene un token válido');
+        }
+      } else {
+        throw new Error('Error en la autenticación');
+      }
+    } catch (error) {
+      console.error('Error en el login:', error);
+      setErrorMessage('Usuario o contraseña incorrectos');
+    }
+  };
 
   const handleRegister = () => {
-    navigate('/register'); // Redirige a la ruta de registro
+    navigate('/register');
   };
 
   return (
     <div className="login-container">
       <h2>Iniciar Sesión</h2>
-      {errorMessage && <p className="error-message">{errorMessage}</p>} {/* Mostrar mensaje de error si lo hay */}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
       <div className="input-container">
         <label htmlFor="username">Nombre de Usuario</label>
         <input
@@ -50,7 +65,8 @@ const handleLogin = async () => {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Ingresa tu contraseña"
         />
-      </div>n      <div className="button-container">
+      </div>
+      <div className="button-container">
         <button className="login-button" onClick={handleLogin}>
           Login
         </button>
@@ -61,4 +77,5 @@ const handleLogin = async () => {
     </div>
   );
 };
+
 export default Login;

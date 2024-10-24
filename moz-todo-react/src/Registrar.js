@@ -10,7 +10,6 @@ const Register = () => {
 
 
   const handleRegister = async () => {
-    console.log("Datos enviados:", { username, email, password });
     if (!username || !email || !password) {
       alert('Todos los campos son obligatorios');
       return;
@@ -21,20 +20,23 @@ const Register = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
+        mode: 'cors',
         body: JSON.stringify({ username, email, password }),
       });
-
+  
       if (response.ok) {
-        alert('Registro exitoso. Ahora puedes iniciar sesión.'); // Redirige al login después del registro
+        alert('Registro exitoso. Ahora puedes iniciar sesión.');
         navigate('/login');
       } else {
-        alert('Error al registrar usuario.');
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message}`);
       }
     } catch (error) {
       console.error('Error durante el registro:', error);
+      alert('Ocurrió un error durante el registro');
     }
   };
+  
 
   return (
     <div className="login-container">

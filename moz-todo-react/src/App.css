@@ -29,20 +29,31 @@ h1 {
 }
 
 .caja {
-  background-color: #964242;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin-bottom: 20px;
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto; /* Centra el cuadro en la página */
+  margin-top: 20px;
+  background-color: #1b5e20; /* Color del menú desplegable */
+  border-radius: 10px;
+  text-align: center; /* Centra el contenido dentro del contenedor */
 }
 
-/* Estilo para el cuerpo del cuadro */
 .caja-body {
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 30px; /* Añadir espacio inferior */
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+.caja-body label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: white; /* Color del texto del label */
+}
+
+.caja-body select {
+  width: 60%; /* Ajustar el ancho del select */
+  padding: 10px;
+  font-size: 16px;
+  margin: 0 auto; /* Centrar select */
 }
 
 /* Estilo para el select */
@@ -101,6 +112,22 @@ button.btn-danger:hover {
   background-color: #d32f2f;
 }
 
+/* Centrar botón de cierre de sesión */
+button.logout {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button.logout:hover {
+  background-color: #e0e0e0;
+}
+
 input.form-control, select.form-control {
   border-radius: 50px;
   padding: 12px;
@@ -117,13 +144,39 @@ input.form-control:focus, select.form-control:focus {
   box-shadow: 0 0 5px rgba(102, 187, 106, 0.8);
 }
 
+.input-container {
+  margin-top: 20px; 
+  text-align: center; /* Centra los inputs y botones */
+}
+
+.input-container input {
+  width: 60%; /* Ajustar el ancho de los inputs */
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.input-container button {
+  padding: 10px 20px;
+  background-color: #1e88e5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.input-container button:hover {
+  background-color: #1565c0; /* Efecto hover */
+}
+
 table {
-  width: 100%;
+  width: 75%; /* Ajusta el ancho para que no ocupe el 100% de la pantalla */
+  margin: 100px auto; /* Aumentar el margen superior para separar de la zona roja */
   border-collapse: collapse;
-  margin-top: 25px;
-  background-color: #b72a52;
+  background-color: #f9f9f9; /* Color de fondo blanco/gris claro */
   border-radius: 10px;
   overflow: hidden;
+  table-layout: fixed;
 }
 
 table thead {
@@ -137,9 +190,14 @@ table th, table td {
   padding: 15px;
   text-align: left;
   border-bottom: 1px solid #ddd;
+  color: #333; /* Letra negra */
 }
 
 table tbody tr:hover {
   background-color: #e3f2fd;
   transition: background-color 0.3s;
 }
+
+
+
+

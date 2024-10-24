@@ -1,35 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-
-import './App.css'
+import './App.css';
 import Login from './Login';
 import Register from './Registrar';
+
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [action, setAction] = useState('Agregar tarea');
+  const [token, setToken] = useState(null); // Estado para el token
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
   const [taskIdComplete, setTaskIdComplete] = useState('');
   const [taskIdDelete, setTaskIdDelete] = useState('');
+  const [action, setAction] = useState(''); // Estado para la acción seleccionada
 
   const apiUrl = 'http://localhost:8080/tasks';
   const logoutUrl = 'http://localhost:8080/auth/logout';
 
-  // Cargar tareas si la acción es 'viewTasks'
+  // Verificar si hay un JWT almacenado en localStorage
   useEffect(() => {
-    if (action === 'viewTasks') {
-      loadTasks();
+    const storedToken = localStorage.getItem('jwtToken');
+    if (storedToken) {
+      setToken(storedToken);
+      setIsAuthenticated(true);
+      loadTasks(storedToken); // Cargar tareas si el token ya está presente
     }
-  }, [action]);
+  }, []);
 
-  const loadTasks = async () => {
+  const loadTasks = async (token) => {
     try {
-      const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Incluir JWT en el header
+        },
+      });
       const data = await response.json();
       setTasks(data);
     } catch (error) {
       console.error('Error al cargar las tareas:', error);
     }
+  };
+
+  const handleLogin = (receivedToken) => {
+    setToken(receivedToken);
+    setIsAuthenticated(true);
+    loadTasks(receivedToken); // Cargar tareas después del login
   };
 
   const addTask = async () => {
@@ -48,14 +62,15 @@ const App = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Usar el token almacenado
         },
         body: JSON.stringify(taskData),
       });
 
       const task = await response.json();
       setTasks([...tasks, task]);
+      setNewTask('');
       alert(`Tarea creada con éxito: ID ${task.id}`);
-      setNewTask(''); // Limpiar el input
     } catch (error) {
       console.error('Error al agregar la tarea:', error);
     }
@@ -73,12 +88,13 @@ const App = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Usar el token almacenado
         },
         body: JSON.stringify({ completed: true }),
       });
 
       alert(`Tarea con ID ${taskId} marcada como completada.`);
-      loadTasks(); // Volver a cargar las tareas después de marcar una como completada
+      loadTasks(token); // Volver a cargar las tareas
     } catch (error) {
       console.error('Error al completar la tarea:', error);
     }
@@ -94,32 +110,15 @@ const App = () => {
     try {
       await fetch(`${apiUrl}/${taskId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`, // Usar el token almacenado
+        },
       });
 
       alert(`Tarea con ID ${taskId} eliminada.`);
-      loadTasks(); // Volver a cargar las tareas después de eliminar una
+      loadTasks(token); // Volver a cargar las tareas
     } catch (error) {
       console.error('Error al eliminar la tarea:', error);
-    }
-  };
-
-  const handleSelectChange = (e) => {
-    setAction(e.target.value);
-  };
-
-  const handleAction = () => {
-    switch (action) {
-      case 'addTask':
-        addTask();
-        break;
-      case 'completeTask':
-        completeTask();
-        break;
-      case 'deleteTask':
-        deleteTask();
-        break;
-      default:
-        loadTasks();
     }
   };
 
@@ -127,12 +126,16 @@ const App = () => {
     try {
       const response = await fetch(logoutUrl, {
         method: 'POST',
-        credentials: 'include', // Para incluir la cookie de sesión
+        headers: {
+          'Authorization': `Bearer ${token}`, // Usar el token almacenado
+        },
       });
 
       if (response.ok) {
         alert('Sesión cerrada con éxito.');
-        setIsAuthenticated(false); // Actualizar el estado para indicar que no está autenticado
+        localStorage.removeItem('jwtToken'); // Eliminar el token JWT
+        setToken(null);
+        setIsAuthenticated(false);
       } else {
         alert('Error al cerrar sesión.');
       }
@@ -141,20 +144,17 @@ const App = () => {
     }
   };
 
-  if (!isAuthenticated) {
-    
-  }
+  const handleSelectChange = (e) => {
+    setAction(e.target.value);
+  };
 
   return (
     <Router>
       {!isAuthenticated ? (
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
-          {/* Ruta para Login */}
-          <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
-          {/* Ruta para Register */}
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/register" element={<Register />} />
-          {/* Ruta por defecto para redirigir a login si no encuentra la ruta */}
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       ) : (
@@ -164,94 +164,95 @@ const App = () => {
             <div className="caja-body">
               <label htmlFor="actionSelect">Selecciona una acción:</label>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-              <select
-                id="actionSelect"
-                value={action}
-                onChange={handleSelectChange}
-                className="form-control"
-              >
-                <option value="">Selecciona una acción</option>
-                <option value="addTask">Agregar tarea</option>
-                <option value="viewTasks">Ver listado de tareas</option>
-                <option value="completeTask">Marcar tarea como completada</option>
-                <option value="deleteTask">Eliminar tarea</option>
-              </select>
+                <select
+                  id="actionSelect"
+                  value={action}
+                  onChange={handleSelectChange}
+                  className="form-control"
+                >
+                  <option value="">Selecciona una acción</option>
+                  <option value="addTask">Agregar tarea</option>
+                  <option value="viewTasks">Ver listado de tareas</option>
+                  <option value="completeTask">Marcar tarea como completada</option>
+                  <option value="deleteTask">Eliminar tarea</option>
+                </select>
               </div>
+
               {action === 'addTask' && (
                 <div className="input-container">
                   <input
                     type="text"
-                    placeholder="Agregar nueva tarea"
                     value={newTask}
                     onChange={(e) => setNewTask(e.target.value)}
-                    className="task-input"
+                    placeholder="Nueva tarea"
                   />
-                  <button onClick={addTask} className="add-button">
-                    Agregar
-                  </button>
+                  <button onClick={addTask}>Agregar tarea</button>
+                </div>
+              )}
+
+              {action === 'viewTasks' && (
+                <div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Descripción</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tasks.map(task => (
+                      <tr key={task.id}>
+                        <td>{task.id}</td>
+                        <td>{task.description}</td>
+                        <td>{task.completed ? 'Completada' : 'Pendiente'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
                 </div>
               )}
 
               {action === 'completeTask' && (
-                <div>
+                <div className="input-container">
                   <input
                     type="text"
                     value={taskIdComplete}
                     onChange={(e) => setTaskIdComplete(e.target.value)}
-                    placeholder="ID de la tarea"
+                    placeholder="ID de la tarea a completar"
                   />
-                  <button onClick={completeTask}>Marcar como completada</button>
+                  <button onClick={completeTask}>Completar tarea</button>
                 </div>
               )}
 
               {action === 'deleteTask' && (
-                <div>
+                <div className="input-container">
                   <input
                     type="text"
                     value={taskIdDelete}
                     onChange={(e) => setTaskIdDelete(e.target.value)}
-                    placeholder="ID de la tarea"
+                    placeholder="ID de la tarea a eliminar"
                   />
                   <button onClick={deleteTask}>Eliminar tarea</button>
                 </div>
               )}
-            </div>
-          </div>
 
-          {action === 'viewTasks' && (
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Descripción</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tasks.map((task) => (
-                  <tr key={task.id}>
-                    <td>{task.id}</td>
-                    <td>{task.description}</td>
-                    <td>{task.completed ? 'Completada' : 'Pendiente'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            <button
-              onClick={logout}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#f0f0f0', // Color de fondo claro
-                color: '#333', // Texto oscuro
-                border: '1px solid #ccc',
-                borderRadius: '5px',
-                cursor: 'pointer',
-              }}
-            >
-              Cerrar sesión
-            </button>
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <button
+                  onClick={logout}
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#f0f0f0',
+                    color: '#333',
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
